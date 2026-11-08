@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#070a0c">
+  <meta name="description" content="坦克大战网页版：守住基地，歼灭敌军，复古街机风格的坦克对战游戏。">
+  <title>坦克大战 · BATTLE CITY</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="ambient" aria-hidden="true">
+    <div class="ambient-glow"></div>
+    <div class="ambient-grid"></div>
+    <div class="ambient-noise"></div>
+  </div>
+
+  <main class="page">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 48 48" role="img">
+            <rect x="7" y="8" width="7" height="32" rx="1" fill="currentColor" opacity=".55"/>
+            <rect x="34" y="8" width="7" height="32" rx="1" fill="currentColor" opacity=".55"/>
+            <path d="M15 13h18l4 7v15H11V20l4-7Z" fill="currentColor"/>
+            <path d="M21 5h6v12h-6z" fill="currentColor"/>
+            <circle cx="24" cy="27" r="7" fill="#0a0f10"/>
+            <circle cx="24" cy="27" r="4" fill="currentColor"/>
+            <path d="M8 17h5v4H8zm27 0h5v4h-5z" fill="currentColor" opacity=".7"/>
+          </svg>
+          <span>01</span>
+        </div>
+        <div class="brand-copy">
+          <div class="brand-kicker">ARCADE CLASSIC <span>/</span> 1985 REBUILT</div>
+          <h1>坦克大战 <span class="brand-en">BATTLE CITY</span></h1>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button id="soundBtn" class="tool-button" type="button" aria-label="切换音效" aria-pressed="true">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 9v6h4l5 4V5L8 9H4Z" fill="currentColor"/>
+            <path class="sound-wave" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+            <path class="sound-slash" d="M16 9l5 6m0-6l-5 6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+          </svg>
+          <span id="soundLabel">音效</span>
+        </button>
+        <button id="pauseBtn" class="tool-button is-hidden" type="button" aria-label="暂停游戏">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <g class="pause-bars">
+              <rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor"/>
+              <rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor"/>
+            </g>
+            <path class="pause-play-icon" d="M8 5.2 19 12 8 18.8Z" fill="currentColor"/>
+          </svg>
+          <span id="pauseLabel">暂停</span>
+        </button>
+      </div>
+    </header>
+
+    <section class="console" aria-label="坦克大战游戏机">
+      <div class="console-screw screw-tl" aria-hidden="true"></div>
+      <div class="console-screw screw-tr" aria-hidden="true"></div>
+      <div class="console-screw screw-bl" aria-hidden="true"></div>
+      <div class="console-screw screw-br" aria-hidden="true"></div>
+
+      <div class="hud" id="hud">
+        <div class="hud-cell hud-level">
+          <span class="hud-label">STAGE / 关卡</span>
+          <div class="hud-value-row">
+            <strong id="levelValue">01</strong>
+            <span class="stage-name" id="stageName">绿野前哨</span>
+          </div>
+        </div>
+        <div class="hud-cell hud-enemy">
+          <span class="hud-label">ENEMY / 敌军</span>
+          <div class="hud-value-row">
+            <span class="enemy-pip" aria-hidden="true"></span>
+            <strong id="enemyValue">12</strong>
+          </div>
+        </div>
+        <div class="hud-cell hud-lives">
+          <span class="hud-label">LIFE / 生命</span>
+          <div id="livesValue" class="lives-value" aria-live="polite"></div>
+        </div>
+        <div class="hud-cell hud-score">
+          <span class="hud-label">SCORE / 得分</span>
+          <strong id="scoreValue">000000</strong>
+        </div>
+        <div class="hud-cell hud-hi">
+          <span class="hud-label">HI-SCORE</span>
+          <strong id="hiValue">000000</strong>
+        </div>
+      </div>
+
+      <div class="screen" id="screen">
+        <canvas id="game" width="720" height="720" aria-label="坦克大战游戏画面"></canvas>
+        <div class="scanlines" aria-hidden="true"></div>
+        <div class="screen-glare" aria-hidden="true"></div>
+        <div class="screen-corner screen-corner-tl" aria-hidden="true"></div>
+        <div class="screen-corner screen-corner-tr" aria-hidden="true"></div>
+        <div class="screen-corner screen-corner-bl" aria-hidden="true"></div>
+        <div class="screen-corner screen-corner-br" aria-hidden="true"></div>
+
+        <div class="overlay menu-overlay" id="menuOverlay">
+          <div class="menu-card">
+            <div class="card-stripe" aria-hidden="true"></div>
+            <div class="eyebrow"><span class="status-led"></span> 经典街机 · 重生版 <span class="eyebrow-cn">SYSTEM READY</span></div>
+            <div class="title-lockup">
+              <span class="title-star" aria-hidden="true">★</span>
+              <h2>坦克大战</h2>
+              <div class="title-en">B A T T L E &nbsp; C I T Y</div>
+            </div>
+            <p class="tagline">守住基地，歼灭所有入侵坦克。</p>
+            <div class="briefing-line">
+              <span>13 × 13 战场</span><span>5 个战区</span><span>6 种战术道具</span>
+            </div>
+
+            <div class="difficulty-group">
+              <div class="difficulty-heading">
+                <span>选择难度</span>
+                <span class="difficulty-note">难度影响生命、敌军数量与得分倍率</span>
+              </div>
+              <div class="difficulty-options" role="group" aria-label="游戏难度">
+                <button class="difficulty-option" type="button" data-difficulty="recruit" aria-pressed="false">
+                  <span class="diff-name">新兵</span>
+                  <span class="diff-tag">RECRUIT</span>
+                </button>
+                <button class="difficulty-option is-selected" type="button" data-difficulty="classic" aria-pressed="true">
+                  <span class="diff-name">经典</span>
+                  <span class="diff-tag">CLASSIC</span>
+                </button>
+                <button class="difficulty-option" type="button" data-difficulty="veteran" aria-pressed="false">
+                  <span class="diff-name">老兵</span>
+                  <span class="diff-tag">VETERAN</span>
+                </button>
+              </div>
+            </div>
+
+            <button id="startBtn" class="primary-button" type="button">
+              <span>进入战场</span>
+              <kbd>ENTER</kbd>
+            </button>
+
+            <div class="menu-meta">
+              <span><b>WASD / ↑↓←→</b> 移动</span>
+              <span><b>SPACE / J</b> 开火</span>
+              <span><b>P / ESC</b> 暂停</span>
+            </div>
+            <div class="menu-footnote">移动端可使用下方虚拟摇杆和开火键</div>
+          </div>
+        </div>
+
+        <div class="overlay pause-overlay is-hidden" id="pauseOverlay">
+          <div class="modal-card" id="pauseCard">
+            <div class="eyebrow"><span class="status-led status-led-amber"></span> SYSTEM PAUSED</div>
+            <h2>战场暂停</h2>
+            <p>当前进度已冻结。按 <kbd>P</kbd> 或 <kbd>ENTER</kbd> 继续战斗。</p>
+            <div class="modal-actions">
+              <button id="resumeBtn" class="primary-button" type="button"><span>继续战斗</span><kbd>P</kbd></button>
+              <button id="quitBtn" class="ghost-button" type="button">返回主菜单</button>
+            </div>
+            <div class="pause-tip">提示：利用砖墙卡住敌人炮线，优先击毁闪烁的敌军坦克，它会掉落战术道具。</div>
+          </div>
+        </div>
+
+        <div class="overlay end-overlay is-hidden" id="endOverlay">
+          <div class="modal-card end-card" id="endCard">
+            <div class="eyebrow" id="endKicker">MISSION FAILED</div>
+            <h2 id="endTitle">基地被摧毁</h2>
+            <p id="endText">基地失守，防线崩溃。</p>
+            <div class="result-grid">
+              <div class="result-cell"><span>SCORE / 得分</span><strong id="endScore">000000</strong></div>
+              <div class="result-cell"><span>HI-SCORE</span><strong id="endBest">000000</strong></div>
+              <div class="result-cell"><span>STAGE / 关卡</span><strong id="endStage">01</strong></div>
+              <div class="result-cell"><span>KILLS / 击毁</span><strong id="endKills">00</strong></div>
+            </div>
+            <div class="end-difficulty">难度 <b id="endDifficulty">经典</b></div>
+            <div class="modal-actions">
+              <button id="againBtn" class="primary-button" type="button"><span>再战一局</span><kbd>ENTER</kbd></button>
+              <button id="menuBtn" class="ghost-button" type="button">返回主菜单</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="status-strip">
+        <div class="power-block">
+          <span class="strip-label">FIREPOWER</span>
+          <div class="power-dots" id="powerDots" aria-hidden="true"></div>
+          <span class="power-name" id="powerLabel">标准炮</span>
+        </div>
+        <div class="buff-list" id="buffs"><span class="buff-empty">战术增益待命</span></div>
+        <div class="difficulty-badge" id="diffBadge" data-difficulty="classic">经典</div>
+      </div>
+    </section>
+
+    <div class="touch-controls" id="touchControls" aria-label="触屏控制">
+      <div class="joystick-wrap">
+        <div class="joystick" id="joystick">
+          <div class="joystick-ring" aria-hidden="true"></div>
+          <div class="joystick-cross" aria-hidden="true"></div>
+          <div class="joystick-knob" id="joystickKnob" aria-hidden="true"></div>
+        </div>
+        <span class="touch-label">移动</span>
+      </div>
+      <div class="fire-wrap">
+        <button class="fire-button" id="fireBtn" type="button" aria-label="开火">
+          <span class="fire-rings" aria-hidden="true"></span>
+          <span class="fire-text">FIRE</span>
+        </button>
+        <span class="touch-label">开火</span>
+      </div>
+    </div>
+
+    <footer class="page-footer">
+      <div class="key-hints">
+        <span><kbd>WASD</kbd><kbd>↑↓←→</kbd> 驾驶</span>
+        <span><kbd>SPACE</kbd><kbd>J</kbd> 开火</span>
+        <span><kbd>P</kbd><kbd>ESC</kbd> 暂停</span>
+        <span><kbd>M</kbd> 静音</span>
+      </div>
+      <div class="footer-mark">TANK BATTLE <span>//</span> WEB ARCADE</div>
+    </footer>
+  </main>
+
+  <noscript>
+    <div class="noscript">需要启用 JavaScript 才能运行坦克大战。</div>
+  </noscript>
+
+  <script src="js/data.js" defer></script>
+  <script src="js/audio.js" defer></script>
+  <script src="js/game.js" defer></script>
+  <script src="js/main.js" defer></script>
+</body>
+</html>
